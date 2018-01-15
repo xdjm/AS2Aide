@@ -14,7 +14,7 @@
                 android:id="@+id/menu_crash"
                 android:title="@string/crash" />
             <item
-                android:id="@+id/menu_help"
+                android:id="@+id/menu_update"
                 android:title="@string/help" />
             <item
                 android:id="@+id/menu_esc"

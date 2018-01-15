@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.adapter;
+package aide.xd.com.buildaide.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -6,9 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xd.aide.buildaide.R;
+import aide.xd.com.buildaide.R;
 
-import static com.xd.aide.buildaide.adapter.Utils.setupItem;
+import static aide.xd.com.buildaide.adapter.Utils.setupItem;
 
 /**
  * Created by yjm on 2017/1/14.

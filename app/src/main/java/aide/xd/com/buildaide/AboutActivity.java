@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.activity;
+package aide.xd.com.buildaide;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,10 +13,10 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
 
-import com.xd.aide.buildaide.R;
 
 /**
- * Created by yjm on 2017/1/16.
+ * @author yjm
+ * @date 2017/1/16
  */
 
 public class AboutActivity extends MaterialAboutActivity {
@@ -29,7 +29,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .build());
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.version)
-                .subText("1.3")
+                .subText("1.4")
                 .icon(R.drawable.about_version)
                 .build());
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()

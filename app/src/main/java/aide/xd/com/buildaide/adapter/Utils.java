@@ -1,9 +1,9 @@
-package com.xd.aide.buildaide.adapter;
+package aide.xd.com.buildaide.adapter;
 
 import android.view.View;
 import android.widget.ImageView;
 
-import com.xd.aide.buildaide.R;
+import aide.xd.com.buildaide.R;
 
 /**
  * Created by yjm on 2017/1/14.

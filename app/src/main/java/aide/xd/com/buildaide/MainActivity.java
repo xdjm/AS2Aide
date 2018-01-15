@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.activity;
+package aide.xd.com.buildaide;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,21 +29,21 @@ import com.pgyersdk.update.PgyUpdateManager;
 import com.pgyersdk.update.UpdateManagerListener;
 import com.pgyersdk.views.PgyerDialog;
 
-import com.xd.aide.buildaide.bean.PackageName;
-import com.xd.aide.buildaide.R;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+/**
+ * @author Administrator
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private CoordinatorLayout coordinatorLayout;
-    private EditText edt_ProjectName;
-    private EditText edt_Project;
+    private EditText edtProjectname;
+    private EditText edtProject;
     private TextView packageFullName;
     private Button clear;
     private AlertDialog dialog;
-    private String[] NameList = {"mayapp", "maycompany", "com"};
+    private String[] namelist = {"mayapp", "maycompany", "com"};
     private boolean a = true;
 
     @Override
@@ -53,12 +53,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initOnClickEvent();
     }
 
-    //TODO 初始化
     private void init() {
         setContentView(R.layout.activity_main);
         File file = new File(Environment.getExternalStorageDirectory().getPath()
                 + "/templet_AS2Aide");
-        if (!file.exists()) copyTemplateFile2Local();
+        if (!file.exists()) {
+            copyTemplateFile2Local();
+        }
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         imageView.setImageResource(R.drawable.logo);
@@ -68,20 +69,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this,
                 android.R.color.transparent));
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mCoordinatorLayout);
-        edt_ProjectName = (EditText) findViewById(R.id.edt_application_name);
-        edt_Project = (EditText) findViewById(R.id.edt_project_name);
+        edtProjectname = (EditText) findViewById(R.id.edt_application_name);
+        edtProject = (EditText) findViewById(R.id.edt_project_name);
         packageFullName = (TextView) findViewById(R.id.package_FullName);
         packageFullName.setText(getString(R.string.package_name) +
                 " myapp.mycompany.com.myapplication");
         findViewById(R.id.next).setOnClickListener(this);
         clear = (Button) findViewById(R.id.clear);
         clear.setOnClickListener(this);
-        findViewById(R.id.fab).setOnClickListener(this);
     }
 
     private void initOnClickEvent() {
         //TODO 设置工程名
-        edt_ProjectName.addTextChangedListener(new TextWatcher() {
+        edtProjectname.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
             }
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
                 clear.setEnabled(true);
-                packageFullName.setText(getString(R.string.package_name) + edt_Project.getText().toString() + "."
-                        + edt_ProjectName.getText().toString().toLowerCase());
-                if (edt_ProjectName.getText().toString().equals("")) {
-                    edt_ProjectName.setError(getString(R.string.error_not_null));
+                packageFullName.setText(getString(R.string.package_name) + edtProject.getText().toString() + "."
+                        + edtProjectname.getText().toString().toLowerCase());
+                if ("".equals(edtProjectname.getText().toString())) {
+                    edtProjectname.setError(getString(R.string.error_not_null));
                 } else {
-                    edt_ProjectName.setError(null);
+                    edtProjectname.setError(null);
                 }
             }
 
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         //TODO 设置包名
-        edt_Project.addTextChangedListener(new TextWatcher() {
+        edtProject.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
             }
@@ -111,13 +111,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
                 clear.setEnabled(true);
-                packageFullName.setText(getString(R.string.package_name) + edt_Project.getText().toString() + "." + edt_ProjectName.getText().toString().toLowerCase());
-                a = edt_Project.getText().toString().matches("^[a-z]{1,}+\\.[a-z]{1,}+\\.[a-z]{1,}$");
+                packageFullName.setText(getString(R.string.package_name) + edtProject.getText().toString() + "." + edtProjectname.getText().toString().toLowerCase());
+                a = edtProject.getText().toString().matches("^[a-z]{1,}+\\.[a-z]{1,}+\\.[a-z]{1,}$");
                 if (!a) {
-                    edt_Project.setError(getString(R.string.error_bad_format));
+                    edtProject.setError(getString(R.string.error_bad_format));
                 } else {
-                    NameList = edt_Project.getText().toString().split("\\.");
-                    edt_Project.setError(null);
+                    namelist = edtProject.getText().toString().split("\\.");
+                    edtProject.setError(null);
                 }
             }
 
@@ -131,9 +131,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View p1) {
         switch (p1.getId()) {
             case R.id.next: {
-                if ((a) && !edt_ProjectName.getText().toString().equals("")) {
-                    PackageName p = new PackageName(NameList[0], NameList[1], NameList[2],
-                            edt_ProjectName.getText().toString());
+                if ((a) && !"".equals(edtProjectname.getText().toString())) {
+                    PackageName p = new PackageName(namelist[0], namelist[1], namelist[2],
+                            edtProjectname.getText().toString());
                     Bundle packageData = new Bundle();
                     packageData.putSerializable("packagename", p);
                     Intent intent = new Intent(MainActivity.this, SelectActivity.class);
@@ -146,13 +146,71 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             break;
             case R.id.clear: {
-                edt_ProjectName.setText("");
-                edt_Project.setText("");
+                edtProjectname.setText("");
+                edtProject.setText("");
                 packageFullName.setText(getString(R.string.package_name));
                 p1.setEnabled(false);
             }
             break;
-            case R.id.fab:
+            default:
+        }
+    }
+
+    private void copyTemplateFile2Local() {
+        configDialog(true);
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    copyFilesFromAssets(MainActivity.this, "templet_AS2Aide",
+                            Environment.getExternalStorageDirectory().getPath() + "/templet_AS2Aide");
+                    configDialog(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    configDialog(false);
+                }
+            }
+        }.start();
+    }
+
+    private void configDialog(boolean needShow) {
+        if (needShow) {
+            if (dialog == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.wait));
+                builder.setMessage(getString(R.string.wait_info));
+                builder.setCancelable(false);
+                dialog = builder.create();
+            }
+            dialog.show();
+        } else {
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_crash:
+                PgyerDialog.setDialogTitleBackgroundColor("#303F9F");
+                PgyerDialog.setDialogTitleTextColor("#ffffff");
+                PgyFeedback.getInstance().showDialog(MainActivity.this);
+                break;
+            case R.id.menu_esc:
+                finish();
+                break;
+            case R.id.menu_about:
+                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu_update:
                 PgyUpdateManager.register(MainActivity.this,
                         new UpdateManagerListener() {
                             @Override
@@ -184,71 +242,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
         }
-    }
-
-    //TODO 初始化->复制模板文件
-    private void copyTemplateFile2Local() {
-        configDialog(true);
-        new Thread() {
-            public void run() {
-                try {
-                    copyFilesFromAssets(MainActivity.this, "templet_AS2Aide",
-                            Environment.getExternalStorageDirectory().getPath() + "/templet_AS2Aide");
-                    configDialog(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    configDialog(false);
-                }
-            }
-        }.start();
-    }
-
-    private void configDialog(boolean needShow) {
-        if (needShow) {
-            if (dialog == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getString(R.string.wait));
-                builder.setMessage(getString(R.string.wait_info));
-                builder.setCancelable(false);
-                dialog = builder.create();
-            }
-            dialog.show();
-        } else {
-            dialog.dismiss();
-        }
-    }
-
-    //TODO 菜单栏设置
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-
-            case R.id.menu_crash:   //TODO PgyCrash
-                PgyerDialog.setDialogTitleBackgroundColor("#303F9F");
-                PgyerDialog.setDialogTitleTextColor("#ffffff");
-                PgyFeedback.getInstance().showDialog(MainActivity.this);
-                break;
-            case R.id.menu_esc: //TODO 退出
-                finish();
-                break;
-            case R.id.menu_about://TODO 关于
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
-                break;
-        }
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO 从assets文件夹中copy文件夹至本地文件夹中
     private void copyFilesFromAssets(Context context, String oldPath, String newPath) {
         try {
-            String fileNames[] = context.getAssets().list(oldPath);
+            String[] fileNames = context.getAssets().list(oldPath);
             //获取assets目录下的所有文件及目
             if (fileNames.length > 0) {
                 //如果是目录
@@ -289,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PgyFeedbackShakeManager.register(this, true);
     }
 
-    //TODO 活动暂停时中止pgy
     @Override
     protected void onPause() {
         // TODO Auto-generated method stub

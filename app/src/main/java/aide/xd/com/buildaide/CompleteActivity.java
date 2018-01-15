@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.activity;
+package aide.xd.com.buildaide;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,9 +27,8 @@ import com.github.developerpaul123.filepickerlibrary.FilePickerActivity;
 import com.github.developerpaul123.filepickerlibrary.enums.Request;
 import com.github.developerpaul123.filepickerlibrary.enums.Scope;
 import com.pgyersdk.feedback.PgyFeedbackShakeManager;
-import com.xd.aide.buildaide.bean.PackageName;
-import com.xd.aide.buildaide.R;
-import com.xd.aide.buildaide.base.Tools;
+
+import base.Tools;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,17 +42,18 @@ import java.util.Map;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
+
 /**
- * Created by yjm on 2017/1/14.
+ * @author Administrator
  */
 public class CompleteActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private TextView tv_path;
-    private EditText edt_ActivityName;
-    private EditText edt_LayoutName;
+    private TextView tvPath;
+    private EditText edtActivityname;
+    private EditText edtLayoutname;
     private CoordinatorLayout c;
     private Button btn;
-    private Button btn_path;
+    private Button btnPath;
     private AlertDialog dialog;
     private android.support.v7.app.AlertDialog.Builder build;
     private PackageName p;
@@ -63,7 +63,16 @@ public class CompleteActivity extends AppCompatActivity {
     private boolean aa = true;
     private Map<String, Object> map = new HashMap<>();
     private File file;
-    private int[] imageIds;
+    private int[] imageIds =new int[]{
+            R.drawable.blank_activity,
+            R.drawable.basic_activity,
+            R.drawable.blank_activity_drawer,
+            R.drawable.blank_activity_tabs,
+            R.drawable.fullscreen_activity,
+            R.drawable.login_activity,
+            R.drawable.scroll_activity,
+            R.drawable.settings_activity
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,36 +90,26 @@ public class CompleteActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.step_3);
         Resources res = getResources();
         String[] description = res.getStringArray(R.array.descriptions);
-        edt_LayoutName = (EditText) findViewById(R.id.layout_name);
-        edt_ActivityName = (EditText) findViewById(R.id.activity_name);
+        edtLayoutname = (EditText) findViewById(R.id.layout_name);
+        edtActivityname = (EditText) findViewById(R.id.activity_name);
         //获取传递的参数
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        a = data.getInt("image");
+        a = intent.getIntExtra("image",1);
         p = (PackageName) data.getSerializable("packagename");
         path = Environment.getExternalStorageDirectory().getPath();
         String sdCard = Environment.getExternalStorageDirectory().getPath() + "/AppProjects/";
         makeRootDirectory(sdCard);
-        TextView tv_description = (TextView) findViewById(R.id.TextView1);
-        tv_description.setText(description[a]);
-        tv_path = (TextView) findViewById(R.id.completeTextView);
-        tv_path.setText(Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString());
+        TextView tvDescription = (TextView) findViewById(R.id.TextView1);
+        tvDescription.setText(description[a]);
+        tvPath = (TextView) findViewById(R.id.completeTextView);
+        tvPath.setText(Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString());
         sdCardHome = Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString();
         ImageView image = (ImageView) findViewById(R.id.completeImageView);
         image.setImageResource(imageIds[a]);
         build = new android.support.v7.app.AlertDialog.Builder(this);
         btn = (Button) findViewById(R.id.completeButton);
-        btn_path = (Button) findViewById(R.id.filepathButton);
-        imageIds = new int[]{
-                R.drawable.blank_activity,
-                R.drawable.basic_activity,
-                R.drawable.blank_activity_drawer,
-                R.drawable.blank_activity_tabs,
-                R.drawable.fullscreen_activity,
-                R.drawable.login_activity,
-                R.drawable.scroll_activity,
-                R.drawable.settings_activity
-        };
+        btnPath = (Button) findViewById(R.id.filepathButton);
     }
 
     private void initOnClickEvent() {
@@ -118,13 +117,13 @@ public class CompleteActivity extends AppCompatActivity {
             @Override
             public void onClick(View p1) {
                 file = new File(sdCardHome + p.getDName());
-                String layoutname = edt_LayoutName.getText().toString();
-                String activityname = edt_ActivityName.getText().toString();
+                String layoutname = edtLayoutname.getText().toString();
+                String activityname = edtActivityname.getText().toString();
                 map.put("packagefullname", p.getFullName());
                 map.put("activityname", activityname);
                 map.put("layoutname", layoutname);
                 map.put("app_name", p.getDName());
-                if (!layoutname.equals("") && aa && !file.exists()) {
+                if (!"".equals(layoutname) && aa && !file.exists()) {
                     switch (a) {
                         default:
                         case 0://TODO EmptyActivity
@@ -325,7 +324,7 @@ public class CompleteActivity extends AppCompatActivity {
                                      * startActivity(intent);
                                      **/
                                     try {
-                                        openJavaFile("file://" + sdCardHome + p.getName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + edt_ActivityName.getText().toString() + ".java");
+                                        openJavaFile("file://" + sdCardHome + p.getName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + edtActivityname.getText().toString() + ".java");
                                     } catch (Exception e) {
                                         Snackbar.make(c, R.string.error_null_aide, Snackbar.LENGTH_LONG)
                                                 .setAction("Action", null).show();
@@ -342,18 +341,18 @@ public class CompleteActivity extends AppCompatActivity {
                     if (file.exists()) {
                         Snackbar.make(c, p.getDName() + getString(R.string.error_exist), Snackbar.LENGTH_LONG).show();
                     }
-                    if (edt_ActivityName.getText().toString().equals("")) {
+                    if (edtActivityname.getText().toString().equals("")) {
                         Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                        edt_ActivityName.startAnimation(anim);
+                        edtActivityname.startAnimation(anim);
                     }
-                    if (edt_LayoutName.getText().toString().equals("")) {
+                    if (edtLayoutname.getText().toString().equals("")) {
                         Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                        edt_LayoutName.startAnimation(anim);
+                        edtLayoutname.startAnimation(anim);
                     }
                 }
             }
         });
-        btn_path.setOnClickListener(new View.OnClickListener() {
+        btnPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
                 Intent filePickerActivity = new Intent(CompleteActivity.this, FilePickerActivity.class);
@@ -364,7 +363,7 @@ public class CompleteActivity extends AppCompatActivity {
             }
         });
         //TODO 监听格式
-        edt_ActivityName.addTextChangedListener(new TextWatcher() {
+        edtActivityname.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
@@ -372,11 +371,11 @@ public class CompleteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                aa = edt_ActivityName.getText().toString().matches("^[A-Z]{1}+[A-z]{1,}$") || edt_ActivityName.getText().toString().matches("^[A-Z]{1}$");
-                if (!aa)
-                    edt_ActivityName.setError("The first letter must be capitalized");
-                else {
-                    edt_ActivityName.setError(null);
+                aa = edtActivityname.getText().toString().matches("^[A-Z]{1}+[A-z]{1,}$") || edtActivityname.getText().toString().matches("^[A-Z]{1}$");
+                if (!aa) {
+                    edtActivityname.setError("The first letter must be capitalized");
+                } else {
+                    edtActivityname.setError(null);
                 }
             }
 
@@ -384,17 +383,17 @@ public class CompleteActivity extends AppCompatActivity {
             public void afterTextChanged(Editable p1) {
             }
         });
-        edt_LayoutName.addTextChangedListener(new TextWatcher() {
+        edtLayoutname.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
             }
 
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                if (edt_LayoutName.getText().toString().equals(""))
-                    edt_LayoutName.setError("Not Null");
-                else {
-                    edt_LayoutName.setError(null);
+                if (edtLayoutname.getText().toString().equals("")) {
+                    edtLayoutname.setError("Not Null");
+                } else {
+                    edtLayoutname.setError(null);
                 }
             }
 
@@ -411,7 +410,6 @@ public class CompleteActivity extends AppCompatActivity {
         });
     }
 
-    //TODO 复制文件夹
     private void copyFolder(String oldPath, String newPath) {
         try {
             (new File(newPath)).mkdirs(); //如果文件夹不存在 则建立新文件夹
@@ -450,7 +448,6 @@ public class CompleteActivity extends AppCompatActivity {
 
     }
 
-    //TODO 创建文件夹
     private void makeRootDirectory(String filePath) {
         File file;
         try {
@@ -465,7 +462,6 @@ public class CompleteActivity extends AppCompatActivity {
 
     }
 
-    //TODO 写文件
     private void writeFileSdcardFile(String fileName, String write_str) {
         try {
             FileOutputStream foul = new FileOutputStream(fileName);
@@ -477,7 +473,6 @@ public class CompleteActivity extends AppCompatActivity {
         }
     }
 
-    //TODO 提示
     private void configDialog(boolean needShow) {
         if (needShow) {
             if (dialog == null) {
@@ -497,8 +492,8 @@ public class CompleteActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((requestCode == 11) && (resultCode == RESULT_OK)) {
-            tv_path.setText(data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH) + "/");
-            sdCardHome = tv_path.getText().toString();
+            tvPath.setText(data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH) + "/");
+            sdCardHome = tvPath.getText().toString();
             Tools.setParam(this, "String", sdCardHome);
         } else if ((requestCode == 10) && (resultCode == RESULT_OK)) {
             Toast.makeText(this, "File Selected: " + data

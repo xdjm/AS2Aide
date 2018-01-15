@@ -9,7 +9,6 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -22,8 +21,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:support-vector-drawable:24.2.1'
-    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:support-v4:+'
+    compile 'com.android.support:support-vector-drawable:+'
 }

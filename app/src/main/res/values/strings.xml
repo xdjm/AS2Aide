@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">AS2Aide</string>
-    <string name="mal_title_about">About</string>
     <string-array name="activity_name">
         <item>EmptyActivity</item>
         <item>BasicActivity</item>
@@ -12,28 +11,28 @@
         <item>SettingsActivity</item>
     </string-array>
     <string-array name="descriptions">
-        <item>Creates a new empty activity.</item>
-        <item>Creates a new basic activity with an app bar.</item>
-        <item>Creates a new Activity with a Navigation Drawer.</item>
-        <item>Creates a new blank activity,with an action bar and navigational elements such as tabs or horizontal swipe.</item>
-        <item>Creates a new activity that toggles the visibility of the system UI and action bar upon user interaction.</item>
-        <item>Creates a new login activity,allowing users to optionally sign in with Google+ or enter an email address and password to log in to or register with your application.</item>
-        <item>Creates a new vertical scrolling activity.</item>
-        <item>Creates a new application settings activity that presents alternative layouts on handset and tablet-size screens.</item>
+        <item>创建一个新的空活动。</item>
+        <item>创建一个新的基本活动与一个应用程序栏。</item>
+        <item>创建一个新的活动与一个带抽屉的导航栏。</item>
+        <item>创建一个新的空白活动,操作栏和导航元素,例如标签或水平滑动。</item>
+        <item>创建一个新的活动,切换系统UI的可见性,对用户交互操作栏。</item>
+        <item>创建一个新的登录活动,允许用户选择登录或输入一个电子邮件地址和密码登录或注册。</item>
+        <item>创建一个新的垂直滚动的活动。</item>
+        <item>创建一个新的应用程序设置活动,提供了手机和平板屏幕上选择布局。</item>
     </string-array>
-    <string name="step_2">Add an Activity to Mobile</string>
-    <string name="step_3">Customize the Activity</string>
-    <string name="about">About</string>
-    <string name="help">Help</string>
-    <string name="crash">Crash</string>
-    <string name="quit">Esc</string>
-    <string name="set">Set</string>
-    <string name="data">Package name : %3$s.%2$s.%1$s.%4$s</string>
+    <string name="step_2">为应用添加一个活动</string>
+    <string name="step_3">自定义活动</string>
+    <string name="about">关于</string>
+    <string name="help">更新</string>
+    <string name="crash">异常</string>
+    <string name="quit">退出</string>
+    <string name="set">设置</string>
+    <string name="data">包名 : %3$s.%2$s.%1$s.%4$s</string>
 	<string name="git_ignore">
 		/build\n
 	</string>
 	<string name="build">
-        "buildscript {\n"
+		"buildscript {\n"
 		"   repositories {\n"
         "      jcenter()\n"
 		"   }\n"
@@ -49,37 +48,38 @@
 	</string>
 	<string name="app_build">apply plugin:\'com.android.application\'\n android {\n compileSdkVersion 24\n buildToolsVersion \"24.0.2\"\n defaultConfig {\n applicationId \"%1$s\"\n minSdkVersion 16\n targetSdkVersion 24\n versionCode 1\n versionName \"1.0\"\n testInstrumentationRunner \"android.support.test.runner.AndroidJUnitRunner\"\n}\n buildTypes {\n release {\n minifyEnabled false\n proguardFiles getDefaultProguardFile(\'proguard\-android.txt\'), \'proguard\-rules.pro\'\n}\n}\n}\n dependencies {\n compile\'com.android.support:appcompat-v7:+\'\n compile \'com.android.support:design:+\'\n}\n
 	</string>
-    <string name="action_settings">Settings</string>
-    <string name="application_name">Application Name :</string>
-    <string name="changelog">ChangeLog</string>
-    <string name="change_info">"*Fix the templet of SettingsActivity\n*Add Activities to "About"\n*Del "Material-Design-Library"\n*Modify the AppTheme\n*More to be continued,Thx~"</string>
-    <string name="contact_author">Contact Author?</string>
-    <string name="go_to_look">Have a look?</string>
+    <string name="application_name">应用程序名 :</string>
+    <string name="changelog">变更日志</string>
+    <string name="change_info">"*添加中文\n*修改模板中版本号为+\n~"</string>
+    <string name="contact_author">联系作者吗?</string>
+    <string name="go_to_look">看一看吗?</string>
     <string name="license">Copyright © 2017 春和景明 \n Licensed under the Apache License,\n Version 2.0 (the \"License\"); \n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\nhttp://www.apache.org/licenses/LICENSE-2.0 \n Unless required by applicable law or agreed to in writing, software \n distributed under the License is distributed on an \"AS IS\" BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.</string>
-    <string name="path">Path:</string>
-    <string name="from">From:…</string>
-    <string name="activity_name">Activity Name:</string>
-    <string name="layout_name">Layout Name:</string>
-    <string name="next">Next</string>
-    <string name="package_name">Package name :</string>
-    <string name="company_domain">Company Domain:</string>
-    <string name="clear">Clear</string>
-    <string name="generator">Build</string>
-    <string name="more_info">More Info</string>
-    <string name="ok">OK</string>
-    <string name="license_name">License</string>
-    <string name="version">Version</string>
-    <string name="change_log">ChangeLog</string>
-    <string name="error_info">Error Info</string>
-    <string name="update">Update</string>
-    <string name="yes">Yes</string>
+    <string name="path">路径:</string>
+    <string name="from">位置:…</string>
+    <string name="activity_name">活动名称:</string>
+    <string name="layout_name">布局名称:</string>
+    <string name="next">继续</string>
+    <string name="package_name">包名 :</string>
+    <string name="company_domain">公司名:</string>
+    <string name="clear">清除</string>
+    <string name="generator">创建</string>
+    <string name="more_info">更多信息</string>
+    <string name="ok">好</string>
+    <string name="license_name">许可证</string>
+    <string name="version">版本</string>
+    <string name="error_info">信息错误</string>
+    <string name="update">更新</string>
+    <string name="yes">是的</string>
     <string name="version_info">已经是最新版本</string>
-    <string name="error_not_null">Not Null</string>
-    <string name="error_bad_format">Bad Format</string>
-    <string name="wait">Wait a moment();</string>
-    <string name="wait_info">{The \"templet_AS2Aide\" is copying...}</string>
-    <string name="error_exist">Project already exists!</string>
-    <string name="error_null_aide">You don\'t install Aide at all</string>
+    <string name="error_not_null">不能为空</string>
+    <string name="error_bad_format">格式错误</string>
+    <string name="wait">稍等</string>
+    <string name="wait_info">模板 \"templet_AS2Aide\" 正在复制...</string>
+    <string name="error_exist">工程已存在!</string>
+    <string name="error_null_aide">没装Aide</string>
+    <string name="mal_title_about">关于</string>
+    <string name="action_settings">设置</string>
+    <string name="change_log">变更日志</string>
     <string name="main">main</string>
     <string name="Main">Main</string>
     <string name="myapp_mycompany_com">myapp.mycompany.com</string>

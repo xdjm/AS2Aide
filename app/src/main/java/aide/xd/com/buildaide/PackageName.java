@@ -1,12 +1,9 @@
-package com.xd.aide.buildaide.bean;
+package aide.xd.com.buildaide;
 
 import java.io.Serializable;
-/**
- * Created by yjm on 2017/1/14.
- */
 
 /**
- * Edited by yjm on 2017/3/26.
+ * @author Administrator
  */
 public class PackageName implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -30,12 +27,10 @@ public class PackageName implements Serializable {
         this.name = name;
     }
 
-    //含大写的工程名
     public String getDName() {
         return name;
     }
 
-    //转换为小写的工程名
     public String getName() {
         return name.toLowerCase();
     }

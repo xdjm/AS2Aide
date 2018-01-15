@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.activity;
+package aide.xd.com.buildaide;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,16 +10,10 @@ import android.widget.Button;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import com.pgyersdk.feedback.PgyFeedbackShakeManager;
-import com.xd.aide.buildaide.adapter.HorizontalPagerAdapter;
-import com.xd.aide.buildaide.bean.PackageName;
-import com.xd.aide.buildaide.R;
+import aide.xd.com.buildaide.adapter.HorizontalPagerAdapter;
 
 /**
- * Created by yjm on 2017/1/14.
- */
-
-/**
- * Edited by yjm on 2017/3/26.
+ * @author Administrator
  */
 public class SelectActivity extends AppCompatActivity {
     private HorizontalInfiniteCycleViewPager infiniteCycleViewPager;
@@ -28,6 +22,7 @@ public class SelectActivity extends AppCompatActivity {
     private Button selectButton;
     private int zhi = 0;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
@@ -54,11 +49,11 @@ public class SelectActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View p1) {
-                Bundle data_Next = new Bundle();
-                data_Next.putSerializable("packagename", p);
-                data_Next.putInt("image", zhi);
+                Bundle dataNext = new Bundle();
+                dataNext.putSerializable("packagename", p);
+                dataNext.putInt("image", zhi);
                 Intent intent = new Intent(SelectActivity.this, CompleteActivity.class);
-                intent.putExtras(data_Next);
+                intent.putExtras(dataNext);
                 startActivity(intent);
             }
         });

@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.base;
+package base;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -63,9 +63,9 @@ public class Tools {
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 
         if("String".equals(type)){
-            if(defaultObject != Environment.getExternalStorageDirectory().getPath() + "/AppProjects/")
-            return sp.getString(key, (String)defaultObject);
-            else{
+            if(defaultObject != Environment.getExternalStorageDirectory().getPath() + "/AppProjects/") {
+                return sp.getString(key, (String) defaultObject);
+            } else{
                 return sp.getString(key, Environment.getExternalStorageDirectory().getPath() + "/AppProjects/");
             }
         }

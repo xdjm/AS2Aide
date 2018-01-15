@@ -1,4 +1,4 @@
-package com.xd.aide.buildaide.base;
+package base;
 import android.app.Application;
 import com.pgyersdk.crash.PgyCrashManager;
 
