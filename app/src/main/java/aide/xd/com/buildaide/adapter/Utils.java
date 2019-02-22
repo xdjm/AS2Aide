@@ -2,7 +2,6 @@ package aide.xd.com.buildaide.adapter;
 
 import android.view.View;
 import android.widget.ImageView;
-
 import aide.xd.com.buildaide.R;
 
 /**
@@ -11,7 +10,7 @@ import aide.xd.com.buildaide.R;
 
 public class Utils {
     protected static void setupItem(final View view, final LibraryObject libraryObject) {
-        final ImageView img = (ImageView) view.findViewById(R.id.img_item);
+        final ImageView img = view.findViewById(R.id.img_item);
         img.setImageResource(libraryObject.getRes());
     }
 

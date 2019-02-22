@@ -18,19 +18,15 @@ public class HorizontalPagerAdapter extends PagerAdapter {
     private final Utils.LibraryObject[] LIBRARIES = new Utils.LibraryObject[]{
             new Utils.LibraryObject(
                     R.drawable.blank_activity
-
             ),
             new Utils.LibraryObject(
                     R.drawable.basic_activity
-
             ),
             new Utils.LibraryObject(
                     R.drawable.blank_activity_drawer
-
             ),
             new Utils.LibraryObject(
                     R.drawable.blank_activity_tabs
-
             ),
 
             new Utils.LibraryObject(

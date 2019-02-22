@@ -1,16 +1,19 @@
 package aide.xd.com.buildaide;
 
+import android.Manifest;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,7 +29,6 @@ import android.widget.Toast;
 import com.github.developerpaul123.filepickerlibrary.FilePickerActivity;
 import com.github.developerpaul123.filepickerlibrary.enums.Request;
 import com.github.developerpaul123.filepickerlibrary.enums.Scope;
-import com.pgyersdk.feedback.PgyFeedbackShakeManager;
 
 import base.Tools;
 
@@ -42,16 +44,13 @@ import java.util.Map;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-
 /**
  * @author Administrator
  */
+
 public class CompleteActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private TextView tvPath;
     private EditText edtActivityname;
     private EditText edtLayoutname;
-    private CoordinatorLayout c;
     private Button btn;
     private Button btnPath;
     private AlertDialog dialog;
@@ -62,8 +61,7 @@ public class CompleteActivity extends AppCompatActivity {
     private String path;
     private boolean aa = true;
     private Map<String, Object> map = new HashMap<>();
-    private File file;
-    private int[] imageIds =new int[]{
+    private int[] imageIds = new int[]{
             R.drawable.blank_activity,
             R.drawable.basic_activity,
             R.drawable.blank_activity_drawer,
@@ -82,287 +80,57 @@ public class CompleteActivity extends AppCompatActivity {
     }
 
     private void init() {
-        setContentView(R.layout.complete_main);
-        c = (CoordinatorLayout) findViewById(R.id.main_content);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.step_3);
+        setContentView(R.layout.complete);
         Resources res = getResources();
         String[] description = res.getStringArray(R.array.descriptions);
-        edtLayoutname = (EditText) findViewById(R.id.layout_name);
-        edtActivityname = (EditText) findViewById(R.id.activity_name);
+        edtLayoutname = findViewById(R.id.layout_name);
+        edtActivityname = findViewById(R.id.activity_name);
         //获取传递的参数
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        a = intent.getIntExtra("image",1);
+        a = intent.getIntExtra("image", 1);
         p = (PackageName) data.getSerializable("packagename");
         path = Environment.getExternalStorageDirectory().getPath();
         String sdCard = Environment.getExternalStorageDirectory().getPath() + "/AppProjects/";
         makeRootDirectory(sdCard);
-        TextView tvDescription = (TextView) findViewById(R.id.TextView1);
+        TextView tvDescription = findViewById(R.id.TextView1);
         tvDescription.setText(description[a]);
-        tvPath = (TextView) findViewById(R.id.completeTextView);
-        tvPath.setText(Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString());
         sdCardHome = Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString();
-        ImageView image = (ImageView) findViewById(R.id.completeImageView);
+        ImageView image = findViewById(R.id.completeImageView);
         image.setImageResource(imageIds[a]);
         build = new android.support.v7.app.AlertDialog.Builder(this);
-        btn = (Button) findViewById(R.id.completeButton);
-        btnPath = (Button) findViewById(R.id.filepathButton);
+        btn = findViewById(R.id.completeButton);
+        btnPath = findViewById(R.id.filepathButton);
     }
 
     private void initOnClickEvent() {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
-                file = new File(sdCardHome + p.getDName());
-                String layoutname = edtLayoutname.getText().toString();
-                String activityname = edtActivityname.getText().toString();
-                map.put("packagefullname", p.getFullName());
-                map.put("activityname", activityname);
-                map.put("layoutname", layoutname);
-                map.put("app_name", p.getDName());
-                if (!"".equals(layoutname) && aa && !file.exists()) {
-                    switch (a) {
-                        default:
-                        case 0://TODO EmptyActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/EmptyActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("EmptyActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("EmptyActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("EmptyActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("EmptyActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("EmptyActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 1://TODO BasicActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/BasicActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("BasicActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("BasicActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("BasicActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("BasicActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("BasicActivity", "content_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/content_main", map);
-                            freemarker_make_xml("BasicActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 2://TODO NavigationDrawerActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/NavigationDrawerActivity/app", sdCardHome + p.getName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("NavigationDrawerActivity", "build.gradle", sdCardHome + p.getName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("NavigationDrawerActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("NavigationDrawerActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("NavigationDrawerActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("NavigationDrawerActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 3://TODO TabbedActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/TabbedActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("TabbedActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("TabbedActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("TabbedActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("TabbedActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("TabbedActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 4://TODO FullscreenActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/FullscreenActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("FullscreenActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("FullscreenActivity", "AndroidManifest", sdCardHome + p.getName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("FullscreenActivity", "FullscreenActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("FullscreenActivity", "activity_fullscreen", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("FullscreenActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 5://TODO LoginActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/LoginActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("LoginActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("LoginActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("LoginActivity", "LoginActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("LoginActivity", "activity_login", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("LoginActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 6://TODO ScrollActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/ScrollActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("ScrollActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("ScrollActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_java("ScrollActivity", "ScrollingActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("ScrollActivity", "activity_scrolling", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                            freemarker_make_xml("ScrollActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                        case 7://TODO SettingsActivity
-                        {
-                            configDialog(true);
-                            makeRootDirectory(sdCardHome);
-                            makeRootDirectory(sdCardHome + p.getDName());
-                            copyFolder(path + "/templet_AS2Aide/SettingsActivity/app", sdCardHome + p.getDName() + "/app");
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
-                            writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                            freemarker_make_gradle("SettingsActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
-                            makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
-                            freemarker_make_xml("SettingsActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
-                            freemarker_make_xml("SettingsActivity", "pref_headers", sdCardHome + p.getDName() + "/app/src/main/res/xml/pref_headers", map);
-                            freemarker_make_java("SettingsActivity", "AppCompatPreferenceActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/AppCompatPreferenceActivity", map);
-                            freemarker_make_java("SettingsActivity", "SettingsActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
-                            freemarker_make_xml("SettingsActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
-                            configDialog(false);
-                            break;
-                        }
-                    }
-                    build.setIcon(R.mipmap.ic_launcher);
-                    build.setTitle(p.getDName() + " Project has been generated!");
-                    build.setMessage("Open the Aide or continue your show");
-                    build.setPositiveButton("Open"
-                            , new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    /**打开Aide主程序的代码【1.2版开始抛弃该方法】
-                                     * Intent intent = new Intent();
-                                     * intent.setComponent(new ComponentName("com.aide.ui","com.aide.ui.MainActivity"));
-                                     * intent.setAction(Intent.ACTION_VIEW);
-                                     * startActivity(intent);
-                                     **/
-                                    try {
-                                        openJavaFile("file://" + sdCardHome + p.getName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + edtActivityname.getText().toString() + ".java");
-                                    } catch (Exception e) {
-                                        Snackbar.make(c, R.string.error_null_aide, Snackbar.LENGTH_LONG)
-                                                .setAction("Action", null).show();
-                                    }
-                                }
-                            });
-                    build.setNegativeButton("Continue", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    build.create().show();
+                if (ContextCompat.checkSelfPermission(CompleteActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(CompleteActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 } else {
-                    if (file.exists()) {
-                        Snackbar.make(c, p.getDName() + getString(R.string.error_exist), Snackbar.LENGTH_LONG).show();
-                    }
-                    if (edtActivityname.getText().toString().equals("")) {
-                        Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                        edtActivityname.startAnimation(anim);
-                    }
-                    if (edtLayoutname.getText().toString().equals("")) {
-                        Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                        edtLayoutname.startAnimation(anim);
-                    }
+                    call();
                 }
+
             }
         });
         btnPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
-                Intent filePickerActivity = new Intent(CompleteActivity.this, FilePickerActivity.class);
-                filePickerActivity.putExtra(FilePickerActivity.SCOPE, Scope.ALL);
-                filePickerActivity.putExtra(FilePickerActivity.REQUEST, Request.DIRECTORY);
-                filePickerActivity.putExtra(FilePickerActivity.INTENT_EXTRA_FAB_COLOR_ID, android.R.color.holo_green_dark);
-                startActivityForResult(filePickerActivity, 11);
+                if (ContextCompat.checkSelfPermission(CompleteActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(CompleteActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                } else {
+                    Intent filePickerActivity = new Intent(CompleteActivity.this, FilePickerActivity.class);
+                    filePickerActivity.putExtra(FilePickerActivity.SCOPE, Scope.ALL);
+                    filePickerActivity.putExtra(FilePickerActivity.REQUEST, Request.DIRECTORY);
+                    filePickerActivity.putExtra(FilePickerActivity.INTENT_EXTRA_FAB_COLOR_ID, android.R.color.holo_green_dark);
+                    startActivityForResult(filePickerActivity, 11);
+                }
             }
         });
-        //TODO 监听格式
         edtActivityname.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -399,13 +167,6 @@ public class CompleteActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable p1) {
-            }
-        });
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View p1) {
-                finish();
             }
         });
     }
@@ -455,7 +216,6 @@ public class CompleteActivity extends AppCompatActivity {
             if (!file.exists()) {
                 file.mkdir();
             }
-            //Toast.makeText(getApplicationContext(), "已存在", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Log.i("error:", e + "");
         }
@@ -492,8 +252,7 @@ public class CompleteActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((requestCode == 11) && (resultCode == RESULT_OK)) {
-            tvPath.setText(data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH) + "/");
-            sdCardHome = tvPath.getText().toString();
+            sdCardHome = data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH) + "/";
             Tools.setParam(this, "String", sdCardHome);
         } else if ((requestCode == 10) && (resultCode == RESULT_OK)) {
             Toast.makeText(this, "File Selected: " + data
@@ -555,7 +314,11 @@ public class CompleteActivity extends AppCompatActivity {
         }
     }
 
-    //TODO 跳转至AIDE
+    /**
+     * 跳转至AIDE
+     *
+     * @param filePath
+     */
     private void openJavaFile(String filePath) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -563,18 +326,237 @@ public class CompleteActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-        PgyFeedbackShakeManager.setShakingThreshold(950);
-        PgyFeedbackShakeManager.register(this, true);
-    }
-
-    @Override
-    protected void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-        PgyFeedbackShakeManager.unregister();
+    void call() {
+        File file = new File(sdCardHome + p.getDName());
+        String layoutname = edtLayoutname.getText().toString();
+        String activityname = edtActivityname.getText().toString();
+        map.put("packagefullname", p.getFullName());
+        map.put("activityname", activityname);
+        map.put("layoutname", layoutname);
+        map.put("app_name", p.getDName());
+        if (!"".equals(layoutname) && aa && !file.exists()) {
+            switch (a) {
+                default:
+                    //EmptyActivity
+                case 0: {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/EmptyActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("EmptyActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("EmptyActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("EmptyActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("EmptyActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("EmptyActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                //BasicActivity
+                case 1: {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/BasicActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("BasicActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("BasicActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("BasicActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("BasicActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("BasicActivity", "content_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/content_main", map);
+                    freemarker_make_xml("BasicActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 2: {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/NavigationDrawerActivity/app", sdCardHome + p.getName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("NavigationDrawerActivity", "build.gradle", sdCardHome + p.getName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("NavigationDrawerActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("NavigationDrawerActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("NavigationDrawerActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("NavigationDrawerActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 3://TODO TabbedActivity
+                {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/TabbedActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("TabbedActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("TabbedActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("TabbedActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("TabbedActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("TabbedActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 4://TODO FullscreenActivity
+                {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/FullscreenActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("FullscreenActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("FullscreenActivity", "AndroidManifest", sdCardHome + p.getName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("FullscreenActivity", "FullscreenActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("FullscreenActivity", "activity_fullscreen", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("FullscreenActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 5://TODO LoginActivity
+                {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/LoginActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("LoginActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("LoginActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("LoginActivity", "LoginActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("LoginActivity", "activity_login", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("LoginActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 6://TODO ScrollActivity
+                {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/ScrollActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("ScrollActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("ScrollActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_java("ScrollActivity", "ScrollingActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("ScrollActivity", "activity_scrolling", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
+                    freemarker_make_xml("ScrollActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+                case 7://TODO SettingsActivity
+                {
+                    configDialog(true);
+                    makeRootDirectory(sdCardHome);
+                    makeRootDirectory(sdCardHome + p.getDName());
+                    copyFolder(path + "/templet_AS2Aide/SettingsActivity/app", sdCardHome + p.getDName() + "/app");
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
+                    writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
+                    freemarker_make_gradle("SettingsActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom());
+                    makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName());
+                    freemarker_make_xml("SettingsActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
+                    freemarker_make_xml("SettingsActivity", "pref_headers", sdCardHome + p.getDName() + "/app/src/main/res/xml/pref_headers", map);
+                    freemarker_make_java("SettingsActivity", "AppCompatPreferenceActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/AppCompatPreferenceActivity", map);
+                    freemarker_make_java("SettingsActivity", "SettingsActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
+                    freemarker_make_xml("SettingsActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
+                    configDialog(false);
+                    break;
+                }
+            }
+            build.setTitle(p.getDName() + " 项目已生成!");
+            build.setMessage("打开Aide，或继续你的创建");
+            build.setPositiveButton("打开"
+                    , new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //TODO 【已修复】打开Aide主程序的代码
+                            try {
+                             Intent intent = new Intent();
+                             intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                             intent.setComponent(new ComponentName("com.aide.ui","com.aide.ui.MainActivity"));
+                             startActivity(intent);
+//                                openJavaFile("file://" + sdCardHome + p.getName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + edtActivityname.getText().toString() + ".java");
+                            } catch (Exception e) {
+                                Snackbar.make(edtActivityname, R.string.error_null_aide, Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        }
+                    });
+            build.setNegativeButton("继续", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            build.create().show();
+        } else {
+            if (file.exists()) {
+                Snackbar.make(edtActivityname, p.getDName() + getString(R.string.error_exist), Snackbar.LENGTH_LONG).show();
+            }
+            if (edtActivityname.getText().toString().equals("")) {
+                Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
+                edtActivityname.startAnimation(anim);
+            }
+            if (edtLayoutname.getText().toString().equals("")) {
+                Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
+                edtLayoutname.startAnimation(anim);
+            }
+        }
     }
 }

@@ -47,9 +47,9 @@ public class MaterialAboutItemAdapter extends RecyclerView.Adapter<MaterialAbout
         MaterialAboutItemViewHolder(View view, int viewType) {
             super(view);
             this.view = view;
-            icon = (ImageView) view.findViewById(R.id.mal_item_image);
-            text = (TextView) view.findViewById(R.id.mal_item_text);
-            subText = (TextView) view.findViewById(R.id.mal_action_item_subtext);
+            icon = view.findViewById(R.id.mal_item_image);
+            text = view.findViewById(R.id.mal_item_text);
+            subText = view.findViewById(R.id.mal_action_item_subtext);
             this.viewType = viewType;
 
             view.setOnClickListener(this);
@@ -215,7 +215,7 @@ public class MaterialAboutItemAdapter extends RecyclerView.Adapter<MaterialAbout
         return data.get(position).getType();
     }
 
-    public void swapData(ArrayList<MaterialAboutItem> newData) {
+    void swapData(ArrayList<MaterialAboutItem> newData) {
         data = newData;
         notifyDataSetChanged();
     }

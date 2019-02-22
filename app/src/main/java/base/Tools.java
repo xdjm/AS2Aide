@@ -2,16 +2,11 @@ package base;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+
 /**
  * Created by yjm on 2017/1/23.
  */
 
-/**
- * SharedPreferences的一个工具类，调用setParam就能保存String, Integer, Boolean, Float, Long类型的参数
- * 同样调用getParam就能获取到保存在手机里面的数据
- * @author xiaanming
- *
- */
 public class Tools {
     /**
      * 保存在手机里面的文件名
@@ -47,9 +42,8 @@ public class Tools {
             editor.putLong(key, (Long)object);
         }
 
-        editor.commit();
+        editor.apply();
     }
-
 
     /**
      * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值

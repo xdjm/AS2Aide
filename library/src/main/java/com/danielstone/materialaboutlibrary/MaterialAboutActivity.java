@@ -49,8 +49,8 @@ public abstract class MaterialAboutActivity extends AppCompatActivity {
     }
 
     private void assignViews() {
-        toolbar = (Toolbar) findViewById(R.id.mal_toolbar);
-        recyclerView = (RecyclerView) findViewById(R.id.mal_recyclerview);
+        toolbar = findViewById(R.id.mal_toolbar);
+        recyclerView = findViewById(R.id.mal_recyclerview);
         recyclerView.setAlpha(0f);
         recyclerView.setTranslationY(20);
     }
@@ -73,7 +73,7 @@ public abstract class MaterialAboutActivity extends AppCompatActivity {
 
         Context context;
 
-        public ListTask(Context context) {
+        ListTask(Context context) {
             this.context = context;
         }
 

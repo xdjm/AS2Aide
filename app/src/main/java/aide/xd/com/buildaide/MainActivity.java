@@ -1,43 +1,42 @@
 package aide.xd.com.buildaide;
 
+import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pgyersdk.feedback.PgyFeedback;
 import com.pgyersdk.feedback.PgyFeedbackShakeManager;
-import com.pgyersdk.javabean.AppBean;
-import com.pgyersdk.update.PgyUpdateManager;
-import com.pgyersdk.update.UpdateManagerListener;
-import com.pgyersdk.views.PgyerDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import aide.xd.com.buildaide.adapter.FragmentAdapter;
+import aide.xd.com.buildaide.fragment.FragmentAbout;
+import aide.xd.com.buildaide.fragment.FragmentHead;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * @author Administrator
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private CoordinatorLayout coordinatorLayout;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,EasyPermissions.PermissionCallbacks {
     private EditText edtProjectname;
     private EditText edtProject;
     private TextView packageFullName;
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AlertDialog dialog;
     private String[] namelist = {"mayapp", "maycompany", "com"};
     private boolean a = true;
+    private List<Fragment> fragmentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,30 +52,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         init();
         initOnClickEvent();
     }
-
     private void init() {
         setContentView(R.layout.activity_main);
-        File file = new File(Environment.getExternalStorageDirectory().getPath()
-                + "/templet_AS2Aide");
-        if (!file.exists()) {
-            copyTemplateFile2Local();
-        }
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        ImageView imageView = (ImageView) findViewById(R.id.backdrop);
-        imageView.setImageResource(R.drawable.logo);
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout)
-                findViewById(R.id.toolbar_layout);
-        collapsingToolbar.setTitle(getResources().getString(R.string.app_name));
-        collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this,
-                android.R.color.transparent));
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mCoordinatorLayout);
-        edtProjectname = (EditText) findViewById(R.id.edt_application_name);
-        edtProject = (EditText) findViewById(R.id.edt_project_name);
-        packageFullName = (TextView) findViewById(R.id.package_FullName);
-        packageFullName.setText(getString(R.string.package_name) +
-                " myapp.mycompany.com.myapplication");
+        ViewPager pager = findViewById(R.id.viewpager);
+        FragmentHead fragment1 = new FragmentHead();
+        FragmentAbout fragment2 = new FragmentAbout();
+
+        fragmentList.add(fragment1);
+        fragmentList.add(fragment2);
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(),fragmentList);
+        pager.setAdapter(fragmentAdapter);
+        request_for_access();
+        edtProjectname = findViewById(R.id.edt_application_name);
+        edtProject = findViewById(R.id.edt_project_name);
+        packageFullName = findViewById(R.id.package_FullName);
+        packageFullName.setText(getString(R.string.package_name) + "com.mycompany.myapp.myapplication");
         findViewById(R.id.next).setOnClickListener(this);
-        clear = (Button) findViewById(R.id.clear);
+        clear = findViewById(R.id.clear);
         clear.setOnClickListener(this);
     }
 
@@ -140,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     intent.putExtras(packageData);
                     startActivity(intent);
                 } else {
-                    Snackbar.make(coordinatorLayout, R.string.error_info, Snackbar.LENGTH_SHORT)
+                    Snackbar.make(edtProject, R.string.error_info, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
             }
@@ -188,67 +181,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.menu_crash:
-                PgyerDialog.setDialogTitleBackgroundColor("#303F9F");
-                PgyerDialog.setDialogTitleTextColor("#ffffff");
-                PgyFeedback.getInstance().showDialog(MainActivity.this);
-                break;
-            case R.id.menu_esc:
-                finish();
-                break;
-            case R.id.menu_about:
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.menu_update:
-                PgyUpdateManager.register(MainActivity.this,
-                        new UpdateManagerListener() {
-                            @Override
-                            public void onUpdateAvailable(final String result) {
-                                final AppBean appBean = getAppBeanFromString(result);
-                                new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle(getString(R.string.update))
-                                        .setMessage("")
-                                        .setNegativeButton(
-                                                getString(R.string.yes),
-                                                new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(
-                                                            DialogInterface dialog,
-                                                            int which) {
-                                                        startDownloadTask(
-                                                                MainActivity.this,
-                                                                appBean.getDownloadURL());
-                                                    }
-                                                }).show();
-                            }
-
-                            @Override
-                            public void onNoUpdateAvailable() {
-                                Snackbar.make(coordinatorLayout, R.string.version_info,
-                                        Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                            }
-                        });
-                break;
-            default:
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void copyFilesFromAssets(Context context, String oldPath, String newPath) {
         try {
             String[] fileNames = context.getAssets().list(oldPath);
             //获取assets目录下的所有文件及目
+            assert fileNames != null;
             if (fileNames.length > 0) {
                 //如果是目录
                 File file = new File(newPath);
@@ -262,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 InputStream is = context.getAssets().open(oldPath);
                 FileOutputStream fos = new FileOutputStream(new File(newPath));
                 byte[] buffer = new byte[1024];
-                int byteCount = 0;
+                int byteCount;
                 while ((byteCount = is.read(buffer)) != -1) {
                     //循环从输入流读取buffer字节
                     fos.write(buffer, 0, byteCount);
@@ -274,25 +211,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fos.close();
             }
         } catch (Exception e) {
-            // TODO Auto-generatedcatch
             e.printStackTrace();
             //如果捕捉到错误则通知UI线程
         }
     }
 
-    @Override
-    protected void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-        PgyFeedbackShakeManager.setShakingThreshold(950);
-        PgyFeedbackShakeManager.register(this, true);
+    @AfterPermissionGranted(0)
+    public void request_for_access() {
+        if (hasWRITE_EXTERNAL_STORAGEPermission()) {
+                if(!new File(Environment.getExternalStorageDirectory().getPath() + "/templet_AS2Aide").exists())
+                copyTemplateFile2Local();
+        } else {
+            // Ask for one permission
+            EasyPermissions.requestPermissions(
+                    this,
+                    getString(R.string.rationale_ask),
+                    0,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+    private boolean hasWRITE_EXTERNAL_STORAGEPermission() {
+        return EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
     @Override
     protected void onPause() {
         // TODO Auto-generated method stub
         super.onPause();
         PgyFeedbackShakeManager.unregister();
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }
 

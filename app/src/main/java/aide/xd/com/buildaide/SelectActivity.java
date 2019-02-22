@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,7 +16,6 @@ import aide.xd.com.buildaide.adapter.HorizontalPagerAdapter;
  */
 public class SelectActivity extends AppCompatActivity {
     private HorizontalInfiniteCycleViewPager infiniteCycleViewPager;
-    private Toolbar toolbar;
     private PackageName p;
     private Button selectButton;
     private int zhi = 0;
@@ -31,15 +29,11 @@ public class SelectActivity extends AppCompatActivity {
 
     private void init() {
         setContentView(R.layout.select_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.step_2);
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         p = (PackageName) data.getSerializable("packagename");
-        selectButton = (Button) findViewById(R.id.selectButton);
-        infiniteCycleViewPager = (HorizontalInfiniteCycleViewPager) findViewById(R.id.viewpager);
+        selectButton = findViewById(R.id.selectButton);
+        infiniteCycleViewPager = findViewById(R.id.viewpager);
         HorizontalPagerAdapter n = new HorizontalPagerAdapter(this);
         infiniteCycleViewPager.setAdapter(n);
     }
@@ -71,12 +65,6 @@ public class SelectActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-            }
-        });
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View p1) {
-                finish();
             }
         });
     }

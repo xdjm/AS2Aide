@@ -13,7 +13,6 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
 
-
 /**
  * @author yjm
  * @date 2017/1/16
@@ -29,7 +28,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .build());
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.version)
-                .subText("1.4")
+                .subText("1.7")
                 .icon(R.drawable.about_version)
                 .build());
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
@@ -48,7 +47,7 @@ public class AboutActivity extends MaterialAboutActivity {
         MaterialAboutCard.Builder authorCardBuilder = new MaterialAboutCard.Builder();
         authorCardBuilder.title(R.string.more_info);
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .text("春和景明").subText("QQ:727787745")
+                .text("景明").subText("QQ:727787745")
                 .icon(R.drawable.about_auther)
                 .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
                     @Override

@@ -34,8 +34,8 @@ public class MaterialAboutListAdapter extends RecyclerView.Adapter<MaterialAbout
 
         MaterialAboutListViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.mal_list_card_title);
-            recyclerView = (RecyclerView) view.findViewById(R.id.mal_card_recyclerview);
+            title = view.findViewById(R.id.mal_list_card_title);
+            recyclerView = view.findViewById(R.id.mal_card_recyclerview);
             adapter = new MaterialAboutItemAdapter(new ArrayList<MaterialAboutItem>());
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(adapter);
@@ -85,9 +85,5 @@ public class MaterialAboutListAdapter extends RecyclerView.Adapter<MaterialAbout
     public void swapData(MaterialAboutList list) {
         data = list.getCards();
         notifyDataSetChanged();
-    }
-
-    ArrayList<MaterialAboutCard> getData() {
-        return data;
     }
 }
