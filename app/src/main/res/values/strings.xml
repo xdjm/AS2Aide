@@ -4,17 +4,15 @@
     >
 <string name="app_name">AS2Aide</string>
     <string-array name="descriptions">
-        <item>创建一个新的空活动。</item>
-        <item>创建一个新的基本活动与一个应用程序栏。</item>
-        <item>创建一个新的活动与一个带抽屉的导航栏。</item>
-        <item>创建一个新的空白活动,操作栏和导航元素,例如标签或水平滑动。</item>
-        <item>创建一个新的活动,切换系统UI的可见性,对用户交互操作栏。</item>
-        <item>创建一个新的登录活动,允许用户选择登录或输入一个电子邮件地址和密码登录或注册。</item>
-        <item>创建一个新的垂直滚动的活动。</item>
-        <item>创建一个新的应用程序设置活动,提供了手机和平板屏幕上选择布局。</item>
+        <item>一个空活动。</item>
+        <item>一个基本活动与应用程序栏。</item>
+        <item>一个活动与带抽屉的导航栏。</item>
+        <item>一个空白活动,操作栏和导航布局。</item>
+        <item>一个活动与对用户交互性布局。</item>
+        <item>一个登录布局。</item>
+        <item>一个垂直滚动的活动。</item>
+        <item>一个应用程序设置布局。</item>
     </string-array>
-    <string name="step_2">为应用添加一个活动</string>
-    <string name="step_3">自定义活动</string>
     <string name="about">关于</string>
     <string name="help">更新</string>
     <string name="crash">反馈</string>
@@ -36,15 +34,44 @@
 		"}\n"
         "}"
 	</string>
-    <string name="app_build">apply plugin:\'com.android.application\'\n android {\n compileSdkVersion 24\n buildToolsVersion \"24.0.2\"\n defaultConfig {\n applicationId \"%1$s\"\n minSdkVersion 16\n targetSdkVersion 24\n versionCode 1\n versionName \"1.0\"\n testInstrumentationRunner \"android.support.test.runner.AndroidJUnitRunner\"\n}\n buildTypes {\n release {\n minifyEnabled false\n proguardFiles getDefaultProguardFile(\'proguard\-android.txt\'), \'proguard\-rules.pro\'\n}\n}\n}\n dependencies {\n compile\'com.android.support:appcompat-v7:+\'\n compile \'com.android.support:design:+\'\n}\n
-	</string>
     <string name="application_name">项目名称</string>
-    <string name="changelog">变更日志</string>
-    <string name="change_info">"*修改ui\n*修复bug"</string>
+    <string name="changelog">说明</string>
+    <string name="change_info">
+        "*修改ui\n
+        Aide辅助工具AS2Aide
+
+还在用Aide自带的模板开发吗。
+
+还没见识过官方v7库的各类炫酷控件吗。
+
+还在为修改新建的模板中的包名类名而发愁吗。
+
+本软件可以帮你从这些烦恼中解脱出来。
+
+使用它可以自动生成工程模板。 包名、项目名称完全由你说了算。
+
+采用AS模板引擎Freemarker，快速生成。
+
+完全遵循Matrial Design风格设计开发。 无任何暗扣和广告。
+
+完全纯净免费便捷的Aide辅助工具
+
+注:
+
+模板文件是基于Android Studio内置的8个模板稍加修改为适合Aide的模板。
+
+用户的Aide需配置好官方的v7库，否则有些工程会报错，配置好v7库的用户可以尽情享受本软件带来的开发便利！
+
+软件首次打开，会占用一定时间配置模板库，请稍等～"</string>
     <string name="contact_author">联系作者吗?</string>
     <string name="go_to_look">看一看吗?</string>
-    <string name="license">Copyright © 2019 xdjm \n Licensed under the Apache License,\n Version 2.0 (the \"License\"); \n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\nhttp://www.apache.org/licenses/LICENSE-2.0 \n Unless required by applicable law or agreed to in writing, software \n distributed under the License is distributed on an \"AS IS\" BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.</string>
-    <string name="from">默认生成模板位置</string>
+    <string name="license">
+        \nCopyright © 2019 xdjm\n
+        \nLicensed under the Apache License, Version 2.0 (the \"License\");  you may not use this file except in compliance with the License. You may obtain a copy of the License at\n
+        \nhttp://www.apache.org/licenses/LICENSE-2.0 \n
+        \nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        \n See the License for the specific language governing permissions and\n limitations under the License.</string>
+    <string name="from">默认生成位置</string>
     <string name="activity_name">活动名称</string>
     <string name="layout_name">布局名称</string>
     <string name="next">继续</string>
@@ -52,7 +79,7 @@
     <string name="company_domain">包名</string>
     <string name="clear">清除</string>
     <string name="generator">创建</string>
-    <string name="more_info">更多信息</string>
+    <string name="more_info">更多</string>
     <string name="ok">好</string>
     <string name="license_name">许可证</string>
     <string name="version">版本</string>
@@ -63,7 +90,7 @@
     <string name="error_not_null">不能为空</string>
     <string name="error_bad_format">格式错误</string>
     <string name="wait">稍等</string>
-    <string name="wait_info">模板 \"templet_AS2Aide\" 正在复制...</string>
+    <string name="wait_info">模板 \"templet_AS2Aide\" 正在复制…</string>
     <string name="error_exist">项目已存在!返回重新命名</string>
     <string name="error_null_aide">没有安装Aide</string>
     <string name="mal_title_about">关于</string>

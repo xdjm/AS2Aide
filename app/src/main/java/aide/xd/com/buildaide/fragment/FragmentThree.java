@@ -1,4 +1,4 @@
-package aide.xd.com.buildaide;
+package aide.xd.com.buildaide.fragment;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -6,18 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -29,8 +31,8 @@ import android.widget.Toast;
 import com.github.developerpaul123.filepickerlibrary.FilePickerActivity;
 import com.github.developerpaul123.filepickerlibrary.enums.Request;
 import com.github.developerpaul123.filepickerlibrary.enums.Scope;
-
-import base.Tools;
+import com.jkb.fragment.rigger.annotation.Animator;
+import com.jkb.fragment.rigger.annotation.Puppet;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,17 +42,21 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import aide.xd.com.buildaide.PackageName;
+import aide.xd.com.buildaide.R;
+import base.Tools;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-/**
- * @author Administrator
- */
-
-public class CompleteActivity extends AppCompatActivity {
-    private EditText edtActivityname;
-    private EditText edtLayoutname;
+import static android.app.Activity.RESULT_OK;
+@Animator(enter = R.anim.push_left_in_no_alpha, exit = R.anim.push_right_out_no_alpha,
+        popEnter = R.anim.push_right_in_no_alpha, popExit = R.anim.push_left_out_no_alpha)
+@Puppet
+public class FragmentThree extends Fragment {
+    private EditText activityName;
+    private EditText layoutName;
     private Button btn;
     private Button btnPath;
     private AlertDialog dialog;
@@ -71,45 +77,49 @@ public class CompleteActivity extends AppCompatActivity {
             R.drawable.scroll_activity,
             R.drawable.settings_activity
     };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init();
-        initOnClickEvent();
+    public static FragmentThree newInstance(Bundle bundle) {
+        FragmentThree fragment = new FragmentThree();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
-    private void init() {
-        setContentView(R.layout.complete);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_three,container,false);
+        init(view);
+        initOnClickEvent();
+        return view;
+    }
+    private void init(View v) {
         Resources res = getResources();
         String[] description = res.getStringArray(R.array.descriptions);
-        edtLayoutname = findViewById(R.id.layout_name);
-        edtActivityname = findViewById(R.id.activity_name);
-        //获取传递的参数
-        Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        a = intent.getIntExtra("image", 1);
+        layoutName = v.findViewById(R.id.layout_name);
+        activityName = v.findViewById(R.id.activity_name);
+        Bundle data = getArguments();
+        assert data != null;
+        a = data.getInt("image");
         p = (PackageName) data.getSerializable("packagename");
         path = Environment.getExternalStorageDirectory().getPath();
         String sdCard = Environment.getExternalStorageDirectory().getPath() + "/AppProjects/";
         makeRootDirectory(sdCard);
-        TextView tvDescription = findViewById(R.id.TextView1);
+        TextView tvDescription = v.findViewById(R.id.TextView1);
         tvDescription.setText(description[a]);
-        sdCardHome = Tools.getParam(this, "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/").toString();
-        ImageView image = findViewById(R.id.completeImageView);
+        sdCardHome = Objects.requireNonNull(Tools.getParam(Objects.requireNonNull(getContext()), "String", Environment.getExternalStorageDirectory().getPath() + "/AppProjects/")).toString();
+        ImageView image = v.findViewById(R.id.completeImageView);
         image.setImageResource(imageIds[a]);
-        build = new android.support.v7.app.AlertDialog.Builder(this);
-        btn = findViewById(R.id.completeButton);
-        btnPath = findViewById(R.id.filepathButton);
+        build = new android.support.v7.app.AlertDialog.Builder(getContext());
+        btn = v.findViewById(R.id.completeButton);
+        btnPath = v.findViewById(R.id.filepathButton);
     }
 
     private void initOnClickEvent() {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
-                if (ContextCompat.checkSelfPermission(CompleteActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(CompleteActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 } else {
                     call();
                 }
@@ -119,11 +129,11 @@ public class CompleteActivity extends AppCompatActivity {
         btnPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
-                if (ContextCompat.checkSelfPermission(CompleteActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(CompleteActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 } else {
-                    Intent filePickerActivity = new Intent(CompleteActivity.this, FilePickerActivity.class);
+                    Intent filePickerActivity = new Intent(getActivity(), FilePickerActivity.class);
                     filePickerActivity.putExtra(FilePickerActivity.SCOPE, Scope.ALL);
                     filePickerActivity.putExtra(FilePickerActivity.REQUEST, Request.DIRECTORY);
                     filePickerActivity.putExtra(FilePickerActivity.INTENT_EXTRA_FAB_COLOR_ID, android.R.color.holo_green_dark);
@@ -131,7 +141,7 @@ public class CompleteActivity extends AppCompatActivity {
                 }
             }
         });
-        edtActivityname.addTextChangedListener(new TextWatcher() {
+        activityName.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
@@ -139,11 +149,11 @@ public class CompleteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                aa = edtActivityname.getText().toString().matches("^[A-Z]{1}+[A-z]{1,}$") || edtActivityname.getText().toString().matches("^[A-Z]{1}$");
+                aa = activityName.getText().toString().matches("^[A-Z][A-z]+$") || activityName.getText().toString().matches("^[A-Z]$");
                 if (!aa) {
-                    edtActivityname.setError("The first letter must be capitalized");
+                    activityName.setError("首字母必须是大写");
                 } else {
-                    edtActivityname.setError(null);
+                    activityName.setError(null);
                 }
             }
 
@@ -151,17 +161,17 @@ public class CompleteActivity extends AppCompatActivity {
             public void afterTextChanged(Editable p1) {
             }
         });
-        edtLayoutname.addTextChangedListener(new TextWatcher() {
+        layoutName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
             }
 
             @Override
             public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                if (edtLayoutname.getText().toString().equals("")) {
-                    edtLayoutname.setError("Not Null");
+                if (layoutName.getText().toString().equals("")) {
+                    layoutName.setError("不能为空");
                 } else {
-                    edtLayoutname.setError(null);
+                    layoutName.setError(null);
                 }
             }
 
@@ -201,10 +211,7 @@ public class CompleteActivity extends AppCompatActivity {
                     copyFolder(oldPath + "/" + aFile, newPath + "/" + aFile);
                 }
             }
-        } catch (Exception e) {
-            System.out.println("复制整个文件夹内容操作出错");
-            e.printStackTrace();
-
+        } catch (Exception ignored) {
         }
 
     }
@@ -216,8 +223,7 @@ public class CompleteActivity extends AppCompatActivity {
             if (!file.exists()) {
                 file.mkdir();
             }
-        } catch (Exception e) {
-            Log.i("error:", e + "");
+        } catch (Exception ignored) {
         }
 
     }
@@ -236,7 +242,7 @@ public class CompleteActivity extends AppCompatActivity {
     private void configDialog(boolean needShow) {
         if (needShow) {
             if (dialog == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
                 builder.setTitle("请稍候");
                 builder.setMessage("工程正在创建...");
                 builder.setCancelable(false);
@@ -251,11 +257,12 @@ public class CompleteActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if ((requestCode == 11) && (resultCode == RESULT_OK)) {
             sdCardHome = data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH) + "/";
-            Tools.setParam(this, "String", sdCardHome);
+            Tools.setParam(Objects.requireNonNull(getContext()), "String", sdCardHome);
         } else if ((requestCode == 10) && (resultCode == RESULT_OK)) {
-            Toast.makeText(this, "File Selected: " + data
+            Toast.makeText(getContext(), "File Selected: " + data
                             .getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH),
                     Toast.LENGTH_LONG).show();
         }
@@ -297,39 +304,27 @@ public class CompleteActivity extends AppCompatActivity {
         }
     }
 
-    private void freemarker_make_gradle(String templateName_FromPath, String templateName, String templateName_OutPath, Map<String, Object> map) {
+    private void freemarker_make_gradle(String templateName_FromPath, String templateName_OutPath, Map<String, Object> map) {
         try {
 
             File dir = new File(path + "/templet_AS2Aide/" + templateName_FromPath + "/app_/");
-            File outFile = new File(templateName_OutPath + templateName);
+            File outFile = new File(templateName_OutPath + "build.gradle");
             //TODO 修改为模板所在文件件的路径
             Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
             Configuration configuration = new Configuration();
             configuration.setDefaultEncoding("utf-8");
             configuration.setDirectoryForTemplateLoading(dir);
-            Template t = configuration.getTemplate(templateName + ".ftl");
+            Template t = configuration.getTemplate("build.gradle" + ".ftl");
             t.process(map, out);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * 跳转至AIDE
-     *
-     * @param filePath
-     */
-    private void openJavaFile(String filePath) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setDataAndType(Uri.parse(filePath), "*/.java");
-        startActivity(intent);
-    }
-
     void call() {
         File file = new File(sdCardHome + p.getDName());
-        String layoutname = edtLayoutname.getText().toString();
-        String activityname = edtActivityname.getText().toString();
+        String layoutname = layoutName.getText().toString();
+        String activityname = activityName.getText().toString();
         map.put("packagefullname", p.getFullName());
         map.put("activityname", activityname);
         map.put("layoutname", layoutname);
@@ -346,7 +341,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("EmptyActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("EmptyActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
@@ -369,7 +364,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("BasicActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("BasicActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
@@ -379,7 +374,7 @@ public class CompleteActivity extends AppCompatActivity {
                     freemarker_make_xml("BasicActivity", "AndroidManifest", sdCardHome + p.getDName() + "/app/src/main/AndroidManifest", map);
                     freemarker_make_java("BasicActivity", "MainActivity", sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + activityname, map);
                     freemarker_make_xml("BasicActivity", "activity_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/" + layoutname, map);
-                    freemarker_make_xml("BasicActivity", "content_main", sdCardHome + p.getDName() + "/app/src/main/res/layout/content_main", map);
+                    freemarker_make_xml("BasicActivity", "fragment_one", sdCardHome + p.getDName() + "/app/src/main/res/layout/fragment_one", map);
                     freemarker_make_xml("BasicActivity", "strings", sdCardHome + p.getDName() + "/app/src/main/res/values/strings", map);
                     configDialog(false);
                     break;
@@ -392,7 +387,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("NavigationDrawerActivity", "build.gradle", sdCardHome + p.getName() + "/app/", map);
+                    freemarker_make_gradle("NavigationDrawerActivity", sdCardHome + p.getName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
@@ -414,7 +409,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("TabbedActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("TabbedActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
@@ -436,7 +431,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("FullscreenActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("FullscreenActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
@@ -459,7 +454,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("LoginActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("LoginActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
@@ -482,7 +477,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("ScrollActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("ScrollActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/res/layout");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
@@ -505,7 +500,7 @@ public class CompleteActivity extends AppCompatActivity {
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/.gitignore", getResources().getString(R.string.git_ignore));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/build.gradle", getResources().getString(R.string.build));
                     writeFileSdcardFile(sdCardHome + p.getDName() + "/settings.gradle", "include':app'");
-                    freemarker_make_gradle("SettingsActivity", "build.gradle", sdCardHome + p.getDName() + "/app/", map);
+                    freemarker_make_gradle("SettingsActivity", sdCardHome + p.getDName() + "/app/", map);
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java");
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp());
                     makeRootDirectory(sdCardHome + p.getDName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany());
@@ -528,13 +523,12 @@ public class CompleteActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             //TODO 【已修复】打开Aide主程序的代码
                             try {
-                             Intent intent = new Intent();
-                             intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                             intent.setComponent(new ComponentName("com.aide.ui","com.aide.ui.MainActivity"));
-                             startActivity(intent);
-//                                openJavaFile("file://" + sdCardHome + p.getName() + "/app/src/main/java/" + p.getMyApp() + "/" + p.getMyCompany() + "/" + p.getCom() + "/" + p.getName() + "/" + edtActivityname.getText().toString() + ".java");
+                                Intent intent = new Intent();
+                                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                                intent.setComponent(new ComponentName("com.aide.ui","com.aide.ui.MainActivity"));
+                                startActivity(intent);
                             } catch (Exception e) {
-                                Snackbar.make(edtActivityname, R.string.error_null_aide, Snackbar.LENGTH_LONG)
+                                Snackbar.make(activityName, R.string.error_null_aide, Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
                             }
                         }
@@ -547,15 +541,15 @@ public class CompleteActivity extends AppCompatActivity {
             build.create().show();
         } else {
             if (file.exists()) {
-                Snackbar.make(edtActivityname, p.getDName() + getString(R.string.error_exist), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activityName, p.getDName() + getString(R.string.error_exist), Snackbar.LENGTH_LONG).show();
             }
-            if (edtActivityname.getText().toString().equals("")) {
-                Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                edtActivityname.startAnimation(anim);
+            if (activityName.getText().toString().equals("")) {
+                Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.myanim);
+                activityName.startAnimation(anim);
             }
-            if (edtLayoutname.getText().toString().equals("")) {
-                Animation anim = AnimationUtils.loadAnimation(CompleteActivity.this, R.anim.myanim);
-                edtLayoutname.startAnimation(anim);
+            if (layoutName.getText().toString().equals("")) {
+                Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.myanim);
+                layoutName.startAnimation(anim);
             }
         }
     }

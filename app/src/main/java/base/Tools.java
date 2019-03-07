@@ -16,9 +16,6 @@ public class Tools {
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
-     * @param context
-     * @param key
-     * @param object
      */
     public static void setParam(Context context , String key, Object object){
 
@@ -47,10 +44,6 @@ public class Tools {
 
     /**
      * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
-     * @param context
-     * @param key
-     * @param defaultObject
-     * @return
      */
     public static Object getParam(Context context , String key, Object defaultObject){
         String type = defaultObject.getClass().getSimpleName();

@@ -1,14 +1,16 @@
 package aide.xd.com.buildaide.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import aide.xd.com.buildaide.R;
+import aide.xd.com.buildaide.Utils;
 
-import static aide.xd.com.buildaide.adapter.Utils.setupItem;
+import static aide.xd.com.buildaide.Utils.setupItem;
 
 /**
  * Created by yjm on 2017/1/14.
@@ -65,13 +67,14 @@ public class HorizontalPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public int getItemPosition(final Object object)
+    public int getItemPosition(@NonNull final Object object)
     {
         return POSITION_NONE;
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(final ViewGroup container, final int position)
+    public Object instantiateItem(@NonNull final ViewGroup container, final int position)
     {
         final View view;
 
@@ -83,13 +86,13 @@ public class HorizontalPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(final View view, final Object object)
+    public boolean isViewFromObject(@NonNull final View view, @NonNull final Object object)
     {
         return view.equals(object);
     }
 
     @Override
-    public void destroyItem(final ViewGroup container, final int position, final Object object)
+    public void destroyItem(@NonNull final ViewGroup container, final int position, @NonNull final Object object)
     {
         container.removeView((View) object);
     }
